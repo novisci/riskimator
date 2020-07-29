@@ -1,0 +1,212 @@
+---
+title: "Cumulative-Risk"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Cumulative-Risk}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(riskimator)
+```
+
+
+# Cumulative Risk
+
+The `causalRisk` package provides an estimator of the cumultative distribution of right-censored outcomes:
+
+\[
+\widehat{\Pr}(Y < t) = \frac{1}{n} \sum_{i = 1}^n \frac{\Delta_i I(Y_i < t)} { {\widehat{\Pr}} (\Delta_i = 1)}
+\]
+
+where $\Delta = I(Y < C)$ with a bit of algebra we can write this function as:
+
+\[
+h(t) = \frac{ \sum_i g(t)}{ \sum_i b }
+\]
+
+where:
+
+\[
+g(t) = a_1(t) \cdot a_2(t)
+\]
+
+\[
+a_1(t) = I(Y_i < t)/1
+\]
+
+\[
+a_2(t) = \Delta_i / \widehat{\Pr} (\Delta_i = 1)
+\]
+
+\[
+b = 1
+\]
+
+The `monoidalEstimator` package provides a function `make_estimator` that creates the functions `g` and `h` above from a `list` of functions that create the `a` terms and a single `b` term.  Each term is created curried function that takes in `vs` (a `list` of data elements) and returns a `function` of whatever arguments are necessary (in this case `t`) and `...`. For this particular estimator, assuming the data are sorted by `min(Y, C)`, these could be written as:
+
+
+```{r}
+a1 <- function(vs){
+  Y <- vs$V1
+  Y <- `if`(is.na(Y), Inf, Y)
+  function(t, ...){
+    # (Y <= t) * 1 # Don't need because I *assume* data is sorted by time
+    1
+  }
+}
+
+a2 <- function(vs){
+  C <- vs$V2
+  Y <- vs$V1
+  
+  # Handle two data structures: 
+  # 1) The one of V1 or V2 that is not missing is min(V1, V2)
+  # 2) Both V1 and V2 are available
+  Del <- `if`(
+    is.na(Y) || is.na(C), 
+    c(TRUE, FALSE)[!is.na(c(Y, C))],
+    Y < C)
+  
+  PrDel <- vs$PrDel
+  function(...){
+    Del / PrDel
+  }
+}
+
+b <- function(vs){
+  one
+}
+
+as <- list(a1, a2)
+```
+
+Since the estimator assumes the data is sorted, by accumulating the sum of the numerator ($g(t)$), we get an unscaled cumulative risk. Then by scaling those values by `\sum_i b`, we get estimates at each subject's time. The collector function `accumsum_collectsum_seq`., accummlates its first argument and collects it second argument. The accumulation starts at the monoid's unit (i.e. `0` for sum of numbers).
+
+For example:
+
+```{r}
+x <- replicate(3, list(function(...) { one() }, function(...) { one() }),
+               simplify = FALSE)
+accumsum_collectsum_seq(x)
+```
+
+Now we can make our estimator:
+
+```{r}
+cumrisk <- make_estimator(as, list(b), collector = accumsum_collectsum_seq)
+```
+
+At this point, `cumrisk` is  a `function` that returns a `function`:
+
+```{r}
+cumrisk
+```
+
+In order to use the estimator, we need to bind data to it.  Here, I use the `example1` data from the `causalRisk` package. 
+
+```{r}
+dt <- 
+  select(
+    causalRisk::example1, 
+    V1 = Death, 
+    V2 = EndofEnrollment
+  ) %>%
+  mutate(
+    Ymin = pmin(V1, V2, na.rm = TRUE),
+    del  = !is.na(V1)
+  ) %>%
+  arrange(Ymin) 
+
+m <- summary(survfit(Surv(Ymin, !del) ~ 1, data = dt), censored = TRUE)
+
+dt$PrDel <- m$surv[match(dt$Ymin, m$time)]
+dt <- dt %>% mutate(PrDel = if_else(is.na(PrDel), lag(PrDel), PrDel))
+```
+
+Now, we bind the data (remember it needs to be a `list` of `list`s).
+
+```{r}
+crisk <- cumrisk(purrr::transpose(dt))
+```
+
+Now, we can evaluate our estimator at different times:
+
+```{r}
+res <- dt %>%
+  mutate(crisk = crisk()[-1])
+
+monoid_res <- filter(res, del)
+
+km <- summary(survfit(Surv(Ymin, del) ~ 1, data = dt)) 
+km_res <- tibble(!!! km[c("time", "surv")]) %>%
+  mutate(
+    crisk = 1 - surv
+  )  %>%
+  select(Ymin = time, crisk)
+
+all.equal(select(monoid_res, Ymin, crisk), km_res)
+```
+
+```{r}
+byhand_res <- dt %>%
+  left_join(
+    tibble(!!! m[c("time", "surv")]), by = c("Ymin" = "time")
+  ) %>%
+  filter(del) %>%
+  mutate(
+    crisk = cumsum(1/surv)/nrow(dt)
+  ) %>%
+  select(-surv)
+  
+all.equal(monoid_res, byhand_res)
+```
+
+
+# Compare to `causalRisk`
+
+One can run this locally if you have `causalRisk` installed.
+
+```{r}
+library(causalRisk)
+models = specify_models(identify_censoring(EndofEnrollment),
+                        identify_outcome(Death))
+fit1 = estimate_ipwrisk(example1, models,
+                   # times = seq(0,24,0.1),
+                   labels = c("Overall cumulative risk"))
+```
+
+```{r}
+causerisk_res <-
+  fit1$results[[1]]$cumrisk %>%
+  select(time, crisk) 
+
+all.equal(causerisk_res, select(monoid_res, time = Ymin, crisk))
+```
+
+# Using with `stype`
+
+```{r}
+library(survival)
+library(stype)
+ctimes <- list(
+   v_event_time(c(5, 6, 10, NA_integer_, 1, NA_integer_, 19), internal_name = "cA"),
+   v_event_time(c(4, 1, 15, NA_integer_, NA_integer_, NA_integer_, 21), internal_name = "cB")
+)
+
+otimes <- list(
+  v_event_time(c(2, 6, 11, 12, NA_integer_, NA_integer_, 25), internal_name = "oA"),
+  v_event_time(c(1, NA_integer_, 10, NA_integer_, NA_integer_, NA_integer_, 23), internal_name = "oB")
+)
+
+x1 <- v_rcensored(outcomes = otimes, censors = ctimes, end_time = 15)
+
+```

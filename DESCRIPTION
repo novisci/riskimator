@@ -1,0 +1,26 @@
+Package: riskimator
+Type: Package
+Title: Estimate cumulative risk
+Version: 0.1.0
+Author: Authors@R: c(person("Bradley", "Saul", role = c("aut", "cre"), 
+                            email = "bsaul@novisci.com"),
+                     person("David", "Pritchard", role = c("ctb"), 
+                            email = "dpritchard@novisci.com") )
+Maintainer: Bradley Saul <bsaul@novisci.com>
+Description: Estimate cumulative risk.
+Encoding: UTF-8
+LazyData: true
+Imports:
+   monoidimator (>= 0.2)
+Suggests: 
+    testthat (>= 2.1.0),
+    knitr,
+    survival,
+    causalRisk,
+    stype,
+    dplyr,
+    rmarkdown
+VignetteBuilder: knitr
+RoxygenNote: 7.0.2
+Roxygen: list(markdown = TRUE)
+License: MIT + file LICENSE
