@@ -11,7 +11,10 @@ Description: Estimate cumulative risk.
 Encoding: UTF-8
 LazyData: true
 Imports:
-   monoidimator (>= 0.2)
+   monoidimator (>= 0.2),
+   purrr (>= 0.3),
+   assertthat (>= 0.2),
+   methods (>= 3.6)
 Suggests: 
     testthat (>= 2.1.0),
     knitr,

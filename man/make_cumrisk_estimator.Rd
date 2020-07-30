@@ -2,7 +2,7 @@
 % Please edit documentation in R/cumrisk.R
 \name{make_cumrisk_estimator}
 \alias{make_cumrisk_estimator}
-\title{An estimator of cumulative risk}
+\title{Creates an estimator for cumulative risk}
 \usage{
 make_cumrisk_estimator(vsl)
 }
@@ -12,5 +12,11 @@ event time), \code{C} (the censoring time), and \code{PrDel} (the estimated
 probability of being uncensored)}
 }
 \description{
-An estimator of cumulative risk
+Creates the following estimator:
+\deqn{
+\widehat{\Pr}(Y < t) = \frac{1}{n} \sum_{i = 1}^n \frac{\Delta_i I(Y_i < t)} { {\widehat{\Pr}} (\Delta_i = 1)}
+}
+
+where \eqn{\Delta_i = I(Y_i < C_i)}, \eqn{Y_i} is the time to the event of
+interest, and \eqn{C_i} is the time to censoring.
 }
