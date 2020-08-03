@@ -1,8 +1,8 @@
 ---
-title: "Cumulative-Risk"
+title: "riskimator"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Cumulative-Risk}
+  %\VignetteIndexEntry{riskimator}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -21,7 +21,7 @@ library(riskimator)
 
 # Cumulative Risk
 
-The `causalRisk` package provides an estimator of the cumultative distribution of right-censored outcomes:
+The `causalRisk` package provides an estimator of the cumultative distribution of right-censored outcomes [@hubbard2000nonparametric]:
 
 \[
 \widehat{\Pr}(Y < t) = \frac{1}{n} \sum_{i = 1}^n \frac{\Delta_i I(Y_i < t)} { {\widehat{\Pr}} (\Delta_i = 1)}

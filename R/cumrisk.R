@@ -12,7 +12,7 @@
 #'     event time), `C` (the censoring time), and `PrDel` (the estimated
 #'     probability of being uncensored)
 #' @importFrom monoidimator make_estimator accumsum_collectsum_seq one
-#' @export
+#' @keywords internal
 make_cumrisk_estimator <- make_estimator(
 
   as = list(
@@ -34,16 +34,53 @@ setClassUnion("maybeTime", c("missing", "NULL", "numeric"))
 
 #' Estimate cumulative risk
 #'
+#' Estimates cumulative risk of right-censored outcomes using the estimator
+#' described in Hubbard, Van der Laan, and Robins (2000):
+#' \deqn{
+#' \widehat{\Pr}(Y < t) = \frac{1}{n} \sum_{i = 1}^n \frac{\Delta_i I(Y_i < t)} { \widehat{\Pr}(\Delta_i = 1)}
+#' }
+#' where \eqn{\Delta_i = I(Y_i < C_i)}, \eqn{Y_i} is the time to the event of
+#' interest, and \eqn{C_i} is the time to censoring.
+#'
 #' @name cumrisk
 #' @param x the object from which to estimate risk. See details.
-#' @param w a vector of weights
+#' @param w a vector of weights. See
+#'      [`cumrisk_weighting`](`cumrisk_weighting`) for functions provided by the
+#'      `riskimator` package.
 #' @param times a numeric vector of times at which to estimate risk. Defaults to
 #'        the times at which events occurred.
 #'
-#' @details
+#' @details `cumrisk` accepts three types of inputs: a `list`, a `data.frame`,
+#' or a [`v_rcensored()`](`stype::v_rcensored()`) vector. `list` inputs should be a
+#' transposed `data.frame` with one element per observation, each element
+#' being a `list` containing either:
 #'
-#' TODO
+#' * `Y`, `C`, and `PrDel` (the time to outcome, time to censoring,
+#'  and probablity of being uncensored)
+#' * `Ymin`, `Del`, and `PrDel` (`min(Y, C)`,  an indicator of being uncensored,
+#'  and probablity of being uncensored)
 #'
+#' `list`s are expected to sorted by `min(Y, C)`; this is not validated.
+#'
+#' The more user-friendly input formats are `data.frame` and `v_rcensored`. With
+#' both these types, a vector of `numeric` weights is required. See
+#' [`cumrisk_weighting`](`cumrisk_weighting`) for functions provided by the
+#' `riskimator` package. `data.frame` inputs must contain either of the variable
+#' set described above. An error is thrown if the data is not sorted by
+#' `min(Y, C)`. With `v_rcensored` vectors sorting is handled by `cumrisk`.
+#'
+#' By default, estimates of cumulative risk at event times are returned. The
+#' `times` argument can be used to estimate times at other points.
+#'
+#' @return a `list` of:
+#' * `time`: a vector a times at which cumulative risk was evaluated
+#' * `estimate`: the estimated cumulative risk for each time
+#'
+#' @references Hubbard A, Laan M van der, Robins JM. Nonparametric locally
+#' efficient estimation of the treatment specific survival distribution with
+#' right censored data and covariates in observational studies.
+#' In: Halloran M, Berry D, editors. Statistical models in epidemiology,
+#' the environment, and clinical trials. New York, NY: Springer; 2000.
 #' @export
 setGeneric("cumrisk", function(x, w, times = NULL) standardGeneric("cumrisk"))
 

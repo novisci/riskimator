@@ -18,14 +18,57 @@ cumrisk(x, w, times = NULL)
 \arguments{
 \item{x}{the object from which to estimate risk. See details.}
 
-\item{w}{a vector of weights}
+\item{w}{a vector of weights. See
+\href{`cumrisk_weighting`}{\code{cumrisk_weighting}} for functions provided by the
+\code{riskimator} package.}
 
 \item{times}{a numeric vector of times at which to estimate risk. Defaults to
 the times at which events occurred.}
 }
+\value{
+a \code{list} of:
+\itemize{
+\item \code{time}: a vector a times at which cumulative risk was evaluated
+\item \code{estimate}: the estimated cumulative risk for each time
+}
+}
 \description{
-Estimate cumulative risk
+Estimates cumulative risk of right-censored outcomes using the estimator
+described in Hubbard, Van der Laan, and Robins (2000):
+\deqn{
+\widehat{\Pr}(Y < t) = \frac{1}{n} \sum_{i = 1}^n \frac{\Delta_i I(Y_i < t)} { \widehat{\Pr}(\Delta_i = 1)}
+}
+where \eqn{\Delta_i = I(Y_i < C_i)}, \eqn{Y_i} is the time to the event of
+interest, and \eqn{C_i} is the time to censoring.
 }
 \details{
-TODO
+\code{cumrisk} accepts three types of inputs: a \code{list}, a \code{data.frame},
+or a \href{`stype::v_rcensored()`}{\code{v_rcensored()}} vector. \code{list} inputs should be a
+transposed \code{data.frame} with one element per observation, each element
+being a \code{list} containing either:
+\itemize{
+\item \code{Y}, \code{C}, and \code{PrDel} (the time to outcome, time to censoring,
+and probablity of being uncensored)
+\item \code{Ymin}, \code{Del}, and \code{PrDel} (\code{min(Y, C)},  an indicator of being uncensored,
+and probablity of being uncensored)
+}
+
+\code{list}s are expected to sorted by \code{min(Y, C)}; this is not validated.
+
+The more user-friendly input formats are \code{data.frame} and \code{v_rcensored}. With
+both these types, a vector of \code{numeric} weights is required. See
+\href{`cumrisk_weighting`}{\code{cumrisk_weighting}} for functions provided by the
+\code{riskimator} package. \code{data.frame} inputs must contain either of the variable
+set described above. An error is thrown if the data is not sorted by
+\code{min(Y, C)}. With \code{v_rcensored} vectors sorting is handled by \code{cumrisk}.
+
+By default, estimates of cumulative risk at event times are returned. The
+\code{times} argument can be used to estimate times at other points.
+}
+\references{
+Hubbard A, Laan M van der, Robins JM. Nonparametric locally
+efficient estimation of the treatment specific survival distribution with
+right censored data and covariates in observational studies.
+In: Halloran M, Berry D, editors. Statistical models in epidemiology,
+the environment, and clinical trials. New York, NY: Springer; 2000.
 }

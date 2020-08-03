@@ -118,10 +118,7 @@ test_that("v_rcensored example", {
 
   vrc <- v_rcensored(outcomes = otimes, censors = ctimes)
 
-  w <- summary(survfit(as_Surv(vrc, censor_as_event = TRUE) ~ 1), censored = TRUE)
-  w <- w$surv[match(get_time(vrc), w$time)]
-
-  crisk_est <- cumrisk(vrc, w)
+  crisk_est <- cumrisk(vrc, product_limit(vrc))
 
   km <- survfit(as_Surv(vrc) ~ 1)
   km <- summary(km)
