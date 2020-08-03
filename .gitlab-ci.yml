@@ -10,7 +10,6 @@ stages:
 testing:
   stage: testing
   script:
-    - R -e 'sessionInfo()'
     - R -e 'install.packages("monoidimator", repo = "http://cran.novisci.com")'
     - R -e 'devtools::check(manual = FALSE, vignettes = FALSE)'
 

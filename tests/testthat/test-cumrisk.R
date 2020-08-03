@@ -104,6 +104,10 @@ test_that("Another survival example", {
 
 test_that("v_rcensored example", {
 
+  # TODO: remove this once stype is updated
+  testthat::skip_on_ci()
+
+
   ctimes <- list(
     v_event_time(c(5, 6, 10, NA_integer_, 1, NA_integer_, 19),
                  internal_name = "cA"))
