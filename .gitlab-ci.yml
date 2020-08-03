@@ -1,0 +1,35 @@
+image: registry.novisci.com/nsstat/statocker/r/pkgdev:3.6.3
+
+variables:
+  RPKG: riskimator
+
+stages:
+  - testing
+  - package
+
+testing:
+  stage: testing
+  script:
+    - R -e 'devtools::check(manual = FALSE, vignettes = FALSE)'
+
+package:
+  stage: package
+  script:
+    - rm -rf .git
+    - R CMD build .
+
+site:
+  stage: package
+  only:
+     - master
+  script:
+     - R -e 'pkgdown::build_site()'
+     - aws s3 sync $CI_PROJECT_DIR/docs/ s3://docs.novisci.com/$RPKG/ --delete --acl public-read
+
+minicran:
+  stage: package
+  only:
+    - master
+  script:
+    - Rscript -e "library(miniCRAN); addLocalPackage('${RPKG}', pkgPath='..', path='/mnt/cran.novisci.com', type='source', build=TRUE)"
+    - R -e "drat::archivePackages(repopath='/mnt/cran.novisci.com', pkg = '${RPKG}')"
