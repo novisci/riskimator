@@ -3,6 +3,11 @@ image: registry.novisci.com/nsstat/statocker/r/pkgdev:3.6.3
 variables:
   RPKG: riskimator
 
+default:
+  before_script:
+    - R -e 'sessionInfo()'
+    - R -e 'install.packages("monoidimator", repo = "http://cran.novisci.com")'
+
 stages:
   - testing
   - package
@@ -10,13 +15,11 @@ stages:
 testing:
   stage: testing
   script:
-    - R -e 'install.packages("monoidimator", repo = "http://cran.novisci.com")'
     - R -e 'devtools::check(manual = FALSE, vignettes = FALSE)'
 
 package:
   stage: package
   script:
-    - R -e 'install.packages("monoidimator", repo = "http://cran.novisci.com")'
     - rm -rf .git
     - R CMD build .
 
@@ -33,6 +36,5 @@ minicran:
   only:
     - master
   script:
-    - R -e 'install.packages("monoidimator", repo = "http://cran.novisci.com")'
     - Rscript -e "library(miniCRAN); addLocalPackage('${RPKG}', pkgPath='..', path='/mnt/cran.novisci.com', type='source', build=TRUE)"
     - R -e "drat::archivePackages(repopath='/mnt/cran.novisci.com', pkg = '${RPKG}')"
