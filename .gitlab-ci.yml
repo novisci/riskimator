@@ -34,5 +34,5 @@ minicran:
     - master
   script:
     - R -e 'install.packages("monoidimator", repo = "http://cran.novisci.com")'
-    - Rscript -e "library(miniCRAN); addLocalPackage('${RPKG}', pkgPath='..', path='/mnt/cran.novisci.com', type='source', build=TRUE)"
+    - R -e "library(miniCRAN); addLocalPackage('${RPKG}', pkgPath='..', path='/mnt/cran.novisci.com', type='source', build=TRUE)"
     - R -e "drat::archivePackages(repopath='/mnt/cran.novisci.com', pkg = '${RPKG}')"

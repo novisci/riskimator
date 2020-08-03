@@ -14,13 +14,13 @@ Imports:
    monoidimator (>= 0.2),
    purrr (>= 0.3),
    assertthat (>= 0.2),
-   methods (>= 3.6)
+   methods (>= 3.6),
+   stype (>= 0.1)
 Suggests: 
     testthat (>= 2.1.0),
     knitr,
     survival,
     causalRisk,
-    stype,
     dplyr,
     rmarkdown
 VignetteBuilder: knitr

@@ -1,5 +1,6 @@
 library(survival, verbose = FALSE)
 library(dplyr, verbose = FALSE)
+library(stype)
 
 test_that("check_validStucture works", {
 
@@ -101,3 +102,31 @@ test_that("Another survival example", {
   expect_equal(crisk_est$estimate, 1 - km$surv, tolerance = 1e-15)
 })
 
+test_that("v_rcensored example", {
+
+  # TODO: remove this once stype is updated
+  testthat::skip_on_ci()
+
+
+  ctimes <- list(
+    v_event_time(c(5, 6, 10, NA_integer_, 1, NA_integer_, 19),
+                 internal_name = "cA"))
+
+  otimes <- list(
+    v_event_time(c(2, 6, 11, 12, NA_integer_, NA_integer_, 25),
+                 internal_name = "oA"))
+
+  vrc <- v_rcensored(outcomes = otimes, censors = ctimes)
+
+  w <- summary(survfit(as_Surv(vrc, censor_as_event = TRUE) ~ 1), censored = TRUE)
+  w <- w$surv[match(get_time(vrc), w$time)]
+
+  crisk_est <- cumrisk(vrc, w)
+
+  km <- survfit(as_Surv(vrc) ~ 1)
+  km <- summary(km)
+
+  expect_equal(crisk_est$time, km$time)
+  expect_equal(crisk_est$estimate, 1 - km$pstate[, 1], tolerance = 1e-15)
+
+})
