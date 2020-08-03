@@ -3,9 +3,8 @@
 #' @description
 #' Creates the following estimator:
 #' \deqn{
-#' \widehat{\Pr}(Y < t) = \frac{1}{n} \sum_{i = 1}^n \frac{\Delta_i I(Y_i < t)} { {\widehat{\Pr}} (\Delta_i = 1)}
+#' \widehat{\Pr}(Y < t) = \frac{1}{n} \sum_{i = 1}^n \frac{\Delta_i I(Y_i < t)} { \widehat{\Pr}(\Delta_i = 1)}
 #' }
-#'
 #' where \eqn{\Delta_i = I(Y_i < C_i)}, \eqn{Y_i} is the time to the event of
 #' interest, and \eqn{C_i} is the time to censoring.
 #'
@@ -61,7 +60,7 @@ setMethod(
 
     assertthat::assert_that(
       missing(times) || is.null(times) || !is.unsorted(times),
-      msg = "times argument must be missing, NULL, or a sorted numeric vector"
+      msg = "times argument must be missing, NULL, or a sorted numeric vector."
     )
 
     # TODO: check events and censors at the same time
@@ -72,19 +71,19 @@ setMethod(
     ev_pos <- events_lgl(x)
     res    <- res[-1][ev_pos]
 
-    ev_times <- events(x)
+    evt <- events(x)
     # pick last time
     last_event <- flatten_lgl(map(
-      .x = rle(ev_times)$lengths,
+      .x = rle(evt)$lengths,
       .f = ~ c(logical(.x - 1L), TRUE)))
 
-    ev_times <- ev_times[last_event]
-    res   <- res[last_event]
+    evt <- evt[last_event]
+    res <- res[last_event]
 
     if (missing(times) || is.null(times) ) {
-      times <- ev_times
+      times <- evt
     } else {
-      f <- stats::stepfun(x = ev_times, y = c(0, res))
+      f <- stats::stepfun(x = evt, y = c(0, res))
       res <- f(times)
     }
 
@@ -112,7 +111,7 @@ setMethod(
 # @export
 # setMethod(
 #   f = "cumrisk",
-#   signature = c("v_censored", "numeric", "numeric"),
+#   signature = c("v_rcensored", "numeric", "numeric"),
 #   function(x, w, times){
 #
 #     x[["PrDel"]] <- w
@@ -154,7 +153,7 @@ validate_cumrisk_df <- function(df){
 }
 
 
-# Input list must have the names in at most 1 element of this list
+# Input list
 valid_structures <- list(
 
   YC = list(
@@ -185,7 +184,6 @@ valid_structures <- list(
     }
   )
 )
-
 
 #' Check that a list-like object has valid structure for
 #' @importFrom purrr map_lgl

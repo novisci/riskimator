@@ -14,9 +14,8 @@ probability of being uncensored)}
 \description{
 Creates the following estimator:
 \deqn{
-\widehat{\Pr}(Y < t) = \frac{1}{n} \sum_{i = 1}^n \frac{\Delta_i I(Y_i < t)} { {\widehat{\Pr}} (\Delta_i = 1)}
+\widehat{\Pr}(Y < t) = \frac{1}{n} \sum_{i = 1}^n \frac{\Delta_i I(Y_i < t)} { \widehat{\Pr}(\Delta_i = 1)}
 }
-
 where \eqn{\Delta_i = I(Y_i < C_i)}, \eqn{Y_i} is the time to the event of
 interest, and \eqn{C_i} is the time to censoring.
 }
