@@ -112,7 +112,7 @@ test_that("v_rcensored example", {
     v_event_time(c(2, 6, 11, 12, NA_integer_, NA_integer_, 25),
                  internal_name = "oA"))
 
-  vrc <= v_rcensored(outcomes = otimes, censors = ctimes)
+  vrc <- v_rcensored(outcomes = otimes, censors = ctimes)
 
   w <- summary(survfit(as_Surv(vrc, censor_as_event = TRUE) ~ 1), censored = TRUE)
   w <- w$surv[match(get_time(vrc), w$time)]
