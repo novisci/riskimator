@@ -4,6 +4,7 @@
 \alias{cumrisk}
 \alias{cumrisk,list,missing,maybeTime-method}
 \alias{cumrisk,data.frame,numeric,maybeTime-method}
+\alias{cumrisk,v_rcensored,numeric,maybeTime-method}
 \title{Estimate cumulative risk}
 \usage{
 cumrisk(x, w, times = NULL)
@@ -11,6 +12,8 @@ cumrisk(x, w, times = NULL)
 \S4method{cumrisk}{list,missing,maybeTime}(x, w, times = NULL)
 
 \S4method{cumrisk}{data.frame,numeric,maybeTime}(x, w, times = NULL)
+
+\S4method{cumrisk}{v_rcensored,numeric,maybeTime}(x, w, times = NULL)
 }
 \arguments{
 \item{x}{the object from which to estimate risk. See details.}

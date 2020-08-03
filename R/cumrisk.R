@@ -107,18 +107,30 @@ setMethod(
   }
 )
 
-# @rdname cumrisk
-# @export
-# setMethod(
-#   f = "cumrisk",
-#   signature = c("v_rcensored", "numeric", "numeric"),
-#   function(x, w, times){
-#
-#     x[["PrDel"]] <- w
-#     x <- validate_cumrisk_df(x)
-#     cumrisk(x = purrr::transpose(x), times = times)
-#   }
-# )
+#' @rdname cumrisk
+#' @importFrom purrr map set_names transpose modify
+#' @importFrom stype as_canonical
+#' @export
+setMethod(
+  f = "cumrisk",
+  signature = c("v_rcensored", "numeric", "maybeTime"),
+  function(x, w, times){
+
+    x <- purrr::map(
+      .x = as_canonical(x)[c("time", "outcome")],
+      .f = as_canonical)
+
+    x <- purrr::set_names(x, c("Ymin", "Del"))
+    x[["PrDel"]] <- w
+
+    ord <- match(sort(x[["Ymin"]]), x[["Ymin"]])
+
+    x <- purrr::modify(x, .f = ~ .x[ord])
+    x <- validate_cumrisk_df(x)
+
+    cumrisk(x = purrr::transpose(x), times = times)
+  }
+)
 
 #' TODO
 #'
@@ -134,17 +146,17 @@ validate_cumrisk_df <- function(df){
     pmin(df[["Y"]], df[["C"]], na.rm = TRUE)
   )
 
-  assertthat::validate_that(
+  assertthat::assert_that(
     !anyNA(Ymin),
     msg = "min(Y, C) must not contain NA values."
   )
 
-  assertthat::validate_that(
+  assertthat::assert_that(
     !anyNA(df[["PrDel"]]),
     msg = "PrDel must not contain NA values."
   )
 
-  assertthat::validate_that(
+  assertthat::assert_that(
     !is.unsorted(Ymin),
     msg = "Data must be sorted by min(Y, C) must be sorted."
   )
@@ -180,7 +192,7 @@ valid_structures <- list(
   Ymin = list(
     match  = function(vs) { all(c("Ymin", "Del", "PrDel") %in% names(vs)) },
     gather = function(vs) {
-      list(Ymin = Ymin, Del = vs$Del, PrDel = vs$PrDel)
+      list(Ymin = vs$Ymin, Del = vs$Del, PrDel = vs$PrDel)
     }
   )
 )
@@ -211,13 +223,13 @@ gather_cumrisk_data <- function(vs){
 #' @keywords internal
 events <- function(vsl){
   map_dbl(
-    .x = keep(vsl, ~ gather_cumrisk_data(.x)$Del),
+    .x = keep(vsl, ~ gather_cumrisk_data(.x)[["Del"]]),
     .f = ~gather_cumrisk_data(.x)[["Ymin"]])
 }
 
 #' Find positions of events in vsl
 #' @keywords internal
 events_lgl <- function(vsl){
-  map_lgl(vsl, ~ gather_cumrisk_data(.x)$Del)
+  map_lgl(vsl, ~ gather_cumrisk_data(.x)[["Del"]])
 }
 
