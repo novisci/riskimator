@@ -25,7 +25,7 @@ cumrisk(x, w, times = NULL, ...)
 \item{x}{the object from which to estimate risk. See details.}
 
 \item{w}{a vector of weights \emph{or} a \code{function} used to estimate weights (see
-details). See \href{`cumrisk_weighting`}{\code{cumrisk_weighting}} for functions
+details). See \code{\link{cumrisk-weight}} for functions
 provided by the \code{riskimator} package.}
 
 \item{times}{a numeric vector of times at which to estimate risk. Defaults to
@@ -52,7 +52,7 @@ interest, and \eqn{C_i} is the time to censoring.
 }
 \details{
 \code{cumrisk} accepts three types of inputs: a \code{list}, a \code{data.frame},
-or a \href{`stype::v_rcensored()`}{\code{v_rcensored()}} vector. \code{list} inputs should be a
+or a \code{\link[stype]{v_rcensored}} vector. \code{list} inputs should be a
 transposed \code{data.frame} with one element per observation, each element
 being a \code{list} containing either:
 \itemize{
@@ -66,7 +66,7 @@ and probablity of being uncensored)
 
 The more user-friendly input formats are \code{data.frame} and \code{v_rcensored}. With
 both these types, a vector of \code{numeric} weights is required. See
-\href{`cumrisk_weighting`}{\code{cumrisk_weighting}} for functions provided by the
+\code{\link{cumrisk-weight}} for functions provided by the
 \code{riskimator} package. \code{data.frame} inputs must contain either of the variable
 set described above. An error is thrown if the data is not sorted by
 \code{min(Y, C)}. With \code{v_rcensored} vectors sorting is handled by \code{cumrisk}.

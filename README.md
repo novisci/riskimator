@@ -33,4 +33,4 @@ $estimate
 [1] 0.1666667 0.3333333 0.5555556
 ```
 
-See the [`cumrisk` documentation](docs/reference/cumrisk.html) for details.
+See the [`cumrisk` documentation](reference/cumrisk.html) for details.
