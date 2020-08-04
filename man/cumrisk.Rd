@@ -4,26 +4,35 @@
 \alias{cumrisk}
 \alias{cumrisk,list,missing,maybeTime-method}
 \alias{cumrisk,data.frame,numeric,maybeTime-method}
+\alias{cumrisk,data.frame,function,maybeTime-method}
 \alias{cumrisk,v_rcensored,numeric,maybeTime-method}
+\alias{cumrisk,v_rcensored,function,maybeTime-method}
 \title{Estimate cumulative risk}
 \usage{
-cumrisk(x, w, times = NULL)
+cumrisk(x, w, times = NULL, ...)
 
-\S4method{cumrisk}{list,missing,maybeTime}(x, w, times = NULL)
+\S4method{cumrisk}{list,missing,maybeTime}(x, w, times = NULL, ...)
 
-\S4method{cumrisk}{data.frame,numeric,maybeTime}(x, w, times = NULL)
+\S4method{cumrisk}{data.frame,numeric,maybeTime}(x, w, times = NULL, ...)
 
-\S4method{cumrisk}{v_rcensored,numeric,maybeTime}(x, w, times = NULL)
+\S4method{cumrisk}{data.frame,`function`,maybeTime}(x, w, times = NULL, ...)
+
+\S4method{cumrisk}{v_rcensored,numeric,maybeTime}(x, w, times = NULL, ...)
+
+\S4method{cumrisk}{v_rcensored,`function`,maybeTime}(x, w, times = NULL, ...)
 }
 \arguments{
 \item{x}{the object from which to estimate risk. See details.}
 
-\item{w}{a vector of weights. See
-\href{`cumrisk_weighting`}{\code{cumrisk_weighting}} for functions provided by the
-\code{riskimator} package.}
+\item{w}{a vector of weights \emph{or} a \code{function} used to estimate weights (see
+details). See \href{`cumrisk_weighting`}{\code{cumrisk_weighting}} for functions
+provided by the \code{riskimator} package.}
 
 \item{times}{a numeric vector of times at which to estimate risk. Defaults to
 the times at which events occurred.}
+
+\item{...}{\emph{If} \code{w} is a \code{function}, additional arguments are passed to that
+function. Otherwise, additional arguments are ignored.}
 }
 \value{
 a \code{list} of:
@@ -65,6 +74,15 @@ set described above. An error is thrown if the data is not sorted by
 By default, estimates of cumulative risk at event times are returned. The
 \code{times} argument can be used to estimate times at other points.
 }
+\section{Using weight \code{function}s}{
+
+
+The \code{w}eight argument can be function of the form \code{function(x, ...){}} that
+returns a \code{numeric} vector, where \code{x} matches the type passed to \code{x} in
+\code{cumrisk}. For example, if you pass a \code{data.frame} to \code{cumrisk}, the \code{w}
+function should take a \code{data.frame}.
+}
+
 \references{
 Hubbard A, Laan M van der, Robins JM. Nonparametric locally
 efficient estimation of the treatment specific survival distribution with

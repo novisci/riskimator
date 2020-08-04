@@ -6,12 +6,14 @@
 \alias{product_limit,v_rcensored-method}
 \title{Weighting functions}
 \usage{
-product_limit(x)
+product_limit(x, ...)
 
-\S4method{product_limit}{v_rcensored}(x)
+\S4method{product_limit}{v_rcensored}(x, ...)
 }
 \arguments{
 \item{x}{the object}
+
+\item{...}{additonal arguments passed to weighting functions where needed}
 }
 \value{
 a \code{numeric} vector of weights
