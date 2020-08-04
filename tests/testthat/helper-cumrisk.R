@@ -18,7 +18,7 @@ compare_km <- function(rcen){
 
   km <- summary(survfit(Surv(time, evnt) ~ 1))
 
-  res <- cumrisk(rcen, w = product_limit(rcen))
+  res <- cumrisk(rcen, w = product_limit)
 
   expect_equal(res$time, km$time)
   expect_equal(res$estimate, 1 - km$surv)
