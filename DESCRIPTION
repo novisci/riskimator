@@ -20,6 +20,7 @@ Imports:
    survival (>= 3.0)
 Suggests: 
     testthat (>= 2.1.0),
+    hedgehog,
     knitr,
     causalRisk,
     dplyr,

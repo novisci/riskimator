@@ -238,7 +238,7 @@ valid_structures <- list(
 #' @importFrom purrr map_lgl
 #' @keywords internal
 check_valid_structure <- function(l){
-  assertthat::validate_that(
+  assertthat::assert_that(
     sum(map_lgl(valid_structures, ~ .x$match(l))) == 1,
     msg = "The names in the data must contain Y, C, PrDel OR Ymin, Del, PrDel"
   )

@@ -6,6 +6,7 @@ test_that("check_validStucture works", {
 
   tester <- list(Y = 1, C = 1, PrDel = 1)
   expect_silent(check_valid_structure(tester))
+  expect_error(check_valid_structure(tester[1:2]))
 })
 
 test_that("cumrisk without tied data", {
@@ -127,3 +128,10 @@ test_that("v_rcensored example", {
   expect_equal(crisk_est$estimate, 1 - km$pstate[, 1], tolerance = 1e-15)
 
 })
+
+test_that(
+  "cumrisk matches 1 - km", {
+   forall(gen.bind(gen_rcens, gen.int(100)),  function(x){ compare_km(x) } )
+  }
+)
+
