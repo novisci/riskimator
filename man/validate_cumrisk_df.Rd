@@ -2,14 +2,14 @@
 % Please edit documentation in R/cumrisk.R
 \name{validate_cumrisk_df}
 \alias{validate_cumrisk_df}
-\title{TODO}
+\title{Check that a list structure is ready for cumrisk}
 \usage{
 validate_cumrisk_df(df)
 }
 \arguments{
-\item{df}{TODO}
+\item{df}{a \code{data.frame} or \code{list}}
 }
 \description{
-TODO
+Check that a list structure is ready for cumrisk
 }
 \keyword{internal}

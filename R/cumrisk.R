@@ -44,11 +44,13 @@ setClassUnion("maybeTime", c("missing", "NULL", "numeric"))
 #'
 #' @name cumrisk
 #' @param x the object from which to estimate risk. See details.
-#' @param w a vector of weights. See
-#'      [`cumrisk_weighting`](`cumrisk_weighting`) for functions provided by the
-#'      `riskimator` package.
+#' @param w a vector of weights *or* a `function` used to estimate weights (see
+#'      details). See [`cumrisk_weighting`](`cumrisk_weighting`) for functions
+#'      provided by the `riskimator` package.
 #' @param times a numeric vector of times at which to estimate risk. Defaults to
 #'        the times at which events occurred.
+#' @param ... *If* `w` is a `function`, additional arguments are passed to that
+#'        function. Otherwise, additional arguments are ignored.
 #'
 #' @details `cumrisk` accepts three types of inputs: a `list`, a `data.frame`,
 #' or a [`v_rcensored()`](`stype::v_rcensored()`) vector. `list` inputs should be a
@@ -72,6 +74,13 @@ setClassUnion("maybeTime", c("missing", "NULL", "numeric"))
 #' By default, estimates of cumulative risk at event times are returned. The
 #' `times` argument can be used to estimate times at other points.
 #'
+#' @section Using weight `function`s:
+#'
+#' The `w`eight argument can be function of the form `function(x, ...){}` that
+#' returns a `numeric` vector, where `x` matches the type passed to `x` in
+#' `cumrisk`. For example, if you pass a `data.frame` to `cumrisk`, the `w`
+#' function should take a `data.frame`.
+#'
 #' @return a `list` of:
 #' * `time`: a vector a times at which cumulative risk was evaluated
 #' * `estimate`: the estimated cumulative risk for each time
@@ -82,7 +91,7 @@ setClassUnion("maybeTime", c("missing", "NULL", "numeric"))
 #' In: Halloran M, Berry D, editors. Statistical models in epidemiology,
 #' the environment, and clinical trials. New York, NY: Springer; 2000.
 #' @export
-setGeneric("cumrisk", function(x, w, times = NULL) standardGeneric("cumrisk"))
+setGeneric("cumrisk", function(x, w, times = NULL, ...) standardGeneric("cumrisk"))
 
 #' @rdname cumrisk
 #' @importFrom purrr flatten_lgl map
@@ -91,7 +100,7 @@ setGeneric("cumrisk", function(x, w, times = NULL) standardGeneric("cumrisk"))
 setMethod(
   f = "cumrisk",
   signature = c("list", "missing", "maybeTime"),
-  function(x, w, times){
+  function(x, w, times, ...){
 
     check_valid_structure(x[[1]])
 
@@ -137,10 +146,29 @@ setMethod(
 setMethod(
   f = "cumrisk",
   signature = c("data.frame", "numeric", "maybeTime"),
-  function(x, w, times){
+  function(x, w, times, ...){
     x[["PrDel"]] <- w
     x <- validate_cumrisk_df(x)
     cumrisk(x = purrr::transpose(x), times = times)
+  }
+)
+
+#' @rdname cumrisk
+#' @importFrom purrr transpose
+#' @export
+setMethod(
+  f = "cumrisk",
+  signature = c("data.frame", "function", "maybeTime"),
+  function(x, w, times, ...){
+    wn <- w(x, ...)
+
+    assertthat::assert_that(
+      length(wn) == nrow(x),
+      msg = sprintf("The weight function return a vector of length %s, but the input data has %s rows",
+                    length(wn), nrow(x))
+    )
+
+    cumrisk(x = x, w = wn, times = times)
   }
 )
 
@@ -151,8 +179,7 @@ setMethod(
 setMethod(
   f = "cumrisk",
   signature = c("v_rcensored", "numeric", "maybeTime"),
-  function(x, w, times){
-
+  function(x, w, times, ...){
     x <- purrr::map(
       .x = as_canonical(x)[c("time", "outcome")],
       .f = as_canonical)
@@ -169,9 +196,29 @@ setMethod(
   }
 )
 
-#' TODO
+#' @rdname cumrisk
+#' @importFrom purrr map set_names transpose modify
+#' @importFrom stype as_canonical
+#' @export
+setMethod(
+  f = "cumrisk",
+  signature = c("v_rcensored", "function", "maybeTime"),
+  function(x, w, times, ...){
+    wn <- w(x = x, ...)
+
+    assertthat::assert_that(
+      length(wn) == length(x),
+      msg = sprintf("The weight function return a vector of length %s, but the input data has length %s",
+                    length(wn), nrow(x))
+    )
+
+    cumrisk(x = x, w = wn, times = times)
+  }
+)
+
+#' Check that a list structure is ready for cumrisk
 #'
-#' @param df TODO
+#' @param df a `data.frame` or `list`
 #' @keywords internal
 validate_cumrisk_df <- function(df){
 
@@ -238,7 +285,7 @@ valid_structures <- list(
 #' @importFrom purrr map_lgl
 #' @keywords internal
 check_valid_structure <- function(l){
-  assertthat::validate_that(
+  assertthat::assert_that(
     sum(map_lgl(valid_structures, ~ .x$match(l))) == 1,
     msg = "The names in the data must contain Y, C, PrDel OR Ymin, Del, PrDel"
   )
