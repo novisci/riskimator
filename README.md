@@ -8,15 +8,15 @@ where $\Delta = I(Y < C)$.
 
 # Install
 
-```r
-install.packages("riskimator", repos="http://cran.novisci.com")
+```
+install.packages("riskimator", repos= "http://cran.novisci.com")
 ```
 
 # Usage
 
 The easiest way to use the package is with the `stype` package's `v_rcensored` type.
 
-```r
+```
 > ctimes <- list(
      v_event_time(c(5, 6, 10, NA_integer_, 1, NA_integer_, 19),
                   internal_name = "cA"))
