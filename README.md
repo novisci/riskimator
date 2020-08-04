@@ -8,15 +8,15 @@ where $\Delta = I(Y < C)$.
 
 # Install
 
-```r
-install.packages("riskimator", repos="http://cran.novisci.com")
+```
+install.packages("riskimator", repos= "http://cran.novisci.com")
 ```
 
 # Usage
 
 The easiest way to use the package is with the `stype` package's `v_rcensored` type.
 
-```r
+```
 > ctimes <- list(
      v_event_time(c(5, 6, 10, NA_integer_, 1, NA_integer_, 19),
                   internal_name = "cA"))
@@ -33,4 +33,4 @@ $estimate
 [1] 0.1666667 0.3333333 0.5555556
 ```
 
-See [Get started](articles/riskimator.html) for more examples.
+See the [`cumrisk` documentation](reference/cumrisk.html) for details.

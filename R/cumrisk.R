@@ -45,7 +45,7 @@ setClassUnion("maybeTime", c("missing", "NULL", "numeric"))
 #' @name cumrisk
 #' @param x the object from which to estimate risk. See details.
 #' @param w a vector of weights *or* a `function` used to estimate weights (see
-#'      details). See [`cumrisk_weighting`](`cumrisk_weighting`) for functions
+#'      details). See \code{\link{cumrisk-weight}} for functions
 #'      provided by the `riskimator` package.
 #' @param times a numeric vector of times at which to estimate risk. Defaults to
 #'        the times at which events occurred.
@@ -53,7 +53,7 @@ setClassUnion("maybeTime", c("missing", "NULL", "numeric"))
 #'        function. Otherwise, additional arguments are ignored.
 #'
 #' @details `cumrisk` accepts three types of inputs: a `list`, a `data.frame`,
-#' or a [`v_rcensored()`](`stype::v_rcensored()`) vector. `list` inputs should be a
+#' or a \code{\link[stype]{v_rcensored}} vector. `list` inputs should be a
 #' transposed `data.frame` with one element per observation, each element
 #' being a `list` containing either:
 #'
@@ -66,7 +66,7 @@ setClassUnion("maybeTime", c("missing", "NULL", "numeric"))
 #'
 #' The more user-friendly input formats are `data.frame` and `v_rcensored`. With
 #' both these types, a vector of `numeric` weights is required. See
-#' [`cumrisk_weighting`](`cumrisk_weighting`) for functions provided by the
+#' \code{\link{cumrisk-weight}} for functions provided by the
 #' `riskimator` package. `data.frame` inputs must contain either of the variable
 #' set described above. An error is thrown if the data is not sorted by
 #' `min(Y, C)`. With `v_rcensored` vectors sorting is handled by `cumrisk`.
