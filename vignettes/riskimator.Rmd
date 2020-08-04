@@ -5,6 +5,7 @@ vignette: >
   %\VignetteIndexEntry{riskimator}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+bibliography: cumrisk.bib
 ---
 
 ```{r, include = FALSE}
@@ -17,7 +18,6 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(riskimator)
 ```
-
 
 # Cumulative Risk
 
@@ -51,5 +51,8 @@ a_2(t) = \Delta_i / \widehat{\Pr} (\Delta_i = 1)
 b = 1
 \]
 
-The `monoidalEstimator` package provides a function `make_estimator` that creates the functions `g` and `h` above from a `list` of functions that create the `a` terms and a single `b` term.  Each term is created curried function that takes in `vs` (a `list` of data elements) and returns a `function` of whatever arguments are necessary (in this case `t`) and `...`. For this particular estimator, assuming the data are sorted by `min(Y, C)`, these could be written as:
+The `monoidalEstimator` package provides a function `make_estimator` that creates the functions `g` and `h` above from a `list` of functions that create the `a` terms and a single `b` term.  Each term is created curried function that takes in `vs` (a `list` of data elements) and returns a `function` of whatever arguments are necessary (in this case `t`) and `...`.
 
+...more details TBD...
+
+# References
