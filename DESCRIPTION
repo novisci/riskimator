@@ -7,7 +7,8 @@ Author: Authors@R: c(person("Bradley", "Saul", role = c("aut", "cre"),
                      person("David", "Pritchard", role = c("ctb"), 
                             email = "dpritchard@novisci.com") )
 Maintainer: Bradley Saul <bsaul@novisci.com>
-Description: Estimate cumulative risk.
+Description: Estimate cumulative risk of right censored events using the inverse-
+    probability weighted estimator from Hubbard, Van Der Laan and Robins (2000).
 Encoding: UTF-8
 LazyData: true
 Imports:
@@ -15,15 +16,16 @@ Imports:
    purrr (>= 0.3),
    assertthat (>= 0.2),
    methods (>= 3.6),
-   stype (>= 0.1)
+   stype (>= 0.2.2),
+   survival (>= 3.0)
 Suggests: 
     testthat (>= 2.1.0),
+    hedgehog,
     knitr,
-    survival,
     causalRisk,
     dplyr,
     rmarkdown
 VignetteBuilder: knitr
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
 License: MIT + file LICENSE

@@ -19,3 +19,4 @@ Creates the following estimator:
 where \eqn{\Delta_i = I(Y_i < C_i)}, \eqn{Y_i} is the time to the event of
 interest, and \eqn{C_i} is the time to censoring.
 }
+\keyword{internal}

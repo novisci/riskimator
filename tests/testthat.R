@@ -1,4 +1,4 @@
-library(testthat, exclude = "describe")
+library(testthat)
 library(riskimator)
 
 test_check("riskimator")
