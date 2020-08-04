@@ -105,10 +105,6 @@ test_that("Another survival example using data.frame as input", {
 
 test_that("v_rcensored example using numeric weights", {
 
-  # TODO: remove this once stype is updated
-  testthat::skip_on_ci()
-
-
   ctimes <- list(
     v_event_time(c(5, 6, 10, NA_integer_, 1, NA_integer_, 19),
                  internal_name = "cA"))
@@ -130,10 +126,6 @@ test_that("v_rcensored example using numeric weights", {
 })
 
 test_that("v_rcensored example using weight function", {
-
-  # TODO: remove this once stype is updated
-  testthat::skip_on_ci()
-
 
   ctimes <- list(
     v_event_time(c(5, 6, 10, NA_integer_, 1, NA_integer_, 19),
