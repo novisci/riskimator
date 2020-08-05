@@ -1,35 +1,21 @@
-
-
-create_rcensor <- function(l){
-  ctimes <- list(
-    v_event_time(replace(l$tm, which(l$st == 1), NA_real_),
-                 internal_name = "cA"))
-
-  otimes <- list(
-    v_event_time(replace(l$tm, which(l$st == 0), NA_real_),
-                 internal_name = "oA"))
-
-  v_rcensored(outcomes = otimes, censors = ctimes)
-}
-
+# Compare product_limit to KM from survival package
 compare_km <- function(rcen){
   time <- as_canonical(get_time(rcen))
   evnt <- !as_canonical(get_outcome(rcen))
 
-  m <- summary(survfit(Surv(time, evnt) ~ 1), censored = TRUE)
+  km  <- summary(survfit(Surv(time, evnt) ~ 1, timefix = FALSE),
+                 censored = TRUE)
+  res <- product_limit(rcen)
 
-  expect_equal(
-    rev(sort(product_limit(rcen))),
-    m$surv
-  )
-}
+  # Unique values should always be equal
+  expect_equal(unique(rev(sort(res))), unique(km$surv),
+               tolerance = 1e-15)
 
-gen_rcens <- function(n){
-  gen.with(
-    list(
-      tm = gen.sample(1:10000, n),
-      st = gen.sample(0:1, n, replace = TRUE)
-    ),
-    create_rcensor
-  )
+  # Length of res should always be >= km
+  expect_gte(length(res), length(km[["time"]]))
+
+  # If there are no duplicates lengths should match
+  if (anyDuplicated(time) == 0){
+    expect_length(res, length(km[["time"]]))
+  }
 }

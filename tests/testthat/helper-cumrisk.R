@@ -1,18 +1,7 @@
 
-
-create_rcensor <- function(l){
-  ctimes <- list(
-    v_event_time(replace(l$tm, which(l$st == 1), NA_real_),
-                 internal_name = "cA"))
-
-  otimes <- list(
-    v_event_time(replace(l$tm, which(l$st == 0), NA_real_),
-                 internal_name = "oA"))
-
-  v_rcensored(outcomes = otimes, censors = ctimes)
-}
-
+# Compare the result of cumrisk to complement of KM from survival
 compare_km <- function(rcen){
+  # browser()
   time <- as_canonical(get_time(rcen))
   evnt <- as_canonical(get_outcome(rcen))
 
@@ -20,16 +9,12 @@ compare_km <- function(rcen){
 
   res <- cumrisk(rcen, w = product_limit)
 
+  expect_length(res$time, length(res$estimate))
+
   expect_equal(res$time, km$time)
-  expect_equal(res$estimate, 1 - km$surv)
+
+  expect_equal(unique(res$estimate), unique(1 - km$surv),
+               tolerance = 1e-15)
 }
 
-gen_rcens <- function(n){
-  gen.with(
-    list(
-      tm = gen.sample(1:10000, n),
-      st = gen.sample(0:1, n, replace = TRUE)
-    ),
-    create_rcensor
-  )
-}
+
