@@ -1,7 +1,7 @@
 Package: riskimator
 Type: Package
 Title: Estimate cumulative risk
-Version: 0.1.1
+Version: 0.1.2
 Author: Authors@R: c(person("Bradley", "Saul", role = c("aut", "cre"), 
                             email = "bsaul@novisci.com"),
                      person("David", "Pritchard", role = c("ctb"), 

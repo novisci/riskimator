@@ -28,3 +28,14 @@ These functions are designed to estimate the probability of being \emph{uncensor
 \item \code{product_limit,v_rcensored-method}: used product limit (Kaplan-Meier) estimator
 }}
 
+\section{Product-limit}{
+
+
+When censoring and outcomes occur at the same time, the \code{cumrisk} function may
+give incorrect results when weighting by product-limit survival estimates.
+To handle this, the \code{product_limit} function add a small amount (\code{1e-11}) to
+any censors at tied times. Uncensoring probabilities for \code{infinite} times are
+replaced with the \code{min} of the estimated probabilities; that is, the
+probability from the last time is carried forward.
+}
+

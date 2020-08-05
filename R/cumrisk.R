@@ -180,6 +180,7 @@ setMethod(
   f = "cumrisk",
   signature = c("v_rcensored", "numeric", "maybeTime"),
   function(x, w, times, ...){
+
     x <- purrr::map(
       .x = as_canonical(x)[c("time", "outcome")],
       .f = as_canonical)
@@ -187,7 +188,7 @@ setMethod(
     x <- purrr::set_names(x, c("Ymin", "Del"))
     x[["PrDel"]] <- w
 
-    ord <- match(sort(x[["Ymin"]]), x[["Ymin"]])
+    ord <- order(x[["Ymin"]])
 
     x <- purrr::modify(x, .f = ~ .x[ord])
     x <- validate_cumrisk_df(x)
