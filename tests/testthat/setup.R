@@ -13,15 +13,16 @@ create_rcensor <- function(l){
     v_event_time(replace(l$tm, which(l$st == 0), NA_real_),
                  internal_name = "oA"))
 
-  v_rcensored(outcomes = otimes, censors = ctimes)
+  v_rcensored(outcomes = otimes, censors = ctimes, end_time = l$et)
 }
 
 # Generate v_rcensored vectors for testing
 gen_rcens <- function(n){
   gen.with(
     g = list(
-      tm = gen.sample(1:10000, n, replace = TRUE),
-      st = gen.sample(0:1,     n, replace = TRUE)
+      tm = gen.sample(0:10000, n, replace = TRUE),
+      st = gen.sample(0:1,     n, replace = TRUE),
+      et = gen.sample(c(0:10000, Inf), 1, replace = TRUE)
     ),
     m = create_rcensor
   )
