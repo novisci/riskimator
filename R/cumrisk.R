@@ -109,8 +109,6 @@ setMethod(
       msg = "times argument must be missing, NULL, or a sorted numeric vector."
     )
 
-    # TODO: check events and censors at the same time
-
     # run estimator
     res <- make_cumrisk_estimator(x)()
     # subset results to times when events occurred
